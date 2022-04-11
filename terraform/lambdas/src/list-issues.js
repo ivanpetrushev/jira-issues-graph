@@ -1,10 +1,16 @@
+const AWS = require("aws-sdk");
+const uuid = require("uuid");
 const axios = require("axios");
 const { listAll } = require("./queries");
+
+const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 const handler = async (event) => {
   console.log("event", JSON.stringify(event, null, 2));
   let success = false;
-  let data = {};
+  let data = {
+    requestId: uuid.v4(),
+  };
   const body = JSON.parse(event.body);
 
   console.log(`${new Date().toISOString()} - START fetching listing`);
@@ -22,10 +28,10 @@ const handler = async (event) => {
     const result = await axios.post(url, listAll, { headers });
     console.log("result", JSON.stringify(result.data, null, 2));
     const listing = result.data;
-    
+
     for (const sprint of listing.data.boardScope.sprints) {
       const sprintName = sprint.name;
-      console.log('sprintName', sprintName);
+      console.log("sprintName", sprintName);
       for (const card of sprint.cards) {
         issues.push({
           key: card.issue.key,
@@ -65,6 +71,21 @@ const handler = async (event) => {
 
   data.issues = issues;
   data.labelsCount = labelsCount;
+
+  if (success) {
+    console.log(`${new Date().toISOString()} - SUCCESS fetching listing`);
+    const putParams = {
+      TableName: "jira-issues-graph",
+      Item: {
+        pk: `listing-${data.request_id}`,
+        sk: "listing",
+        issues,
+        labelsCount,
+        ttl: Math.floor(Date.now() / 1000) + 3600,
+      },
+    };
+    await dynamodb.put(putParams).promise();
+  }
 
   return {
     statusCode: 200,
