@@ -1,1 +1,37 @@
-huzzah!
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="UTF-8" />
+  <title>Jira Issues Graph</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="" />
+  <style></style>
+  <script src="main.js"></script>
+  <body>
+    <table>
+      <tr>
+        <td>JIRA base URL (no trailing slash)</td>
+        <td>
+          <input type="text" name="jira_base_url" id="jira_base_url" placeholder="https://mydomain.atlassian.net" />
+        </td>
+      </tr>
+      <tr>
+        <td>Access cookies<br />TODO: instructions</td>
+        <td>
+          <textarea name="access_cookies" id="access_cookies" placeholder="JSESSIONID=..."></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <button onclick="request_listing()">Submit</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Select label to show</td>
+        <td>
+          <select id="labels"></select>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
