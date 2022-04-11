@@ -4,7 +4,7 @@ module "lambda_list_issues" {
   source_path               = "."
   lambda_handler            = "src/list-issues.handler"
   path_part                 = "list-issues"
-  http_method               = "GET"
+  http_method               = "POST"
   iam_arn                   = aws_iam_role.iam_for_lambda.arn
   rest_api_root_resource_id = aws_api_gateway_rest_api.api.root_resource_id
   rest_api_id               = aws_api_gateway_rest_api.api.id
