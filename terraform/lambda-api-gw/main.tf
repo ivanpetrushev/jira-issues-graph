@@ -127,5 +127,5 @@ resource "aws_api_gateway_integration_response" "integration_response_options" {
 }
 
 output "endpoint" {
-  value = "${var.http_method} - ${aws_api_gateway_deployment.deployment.invoke_url}/${var.path_part}"
+  value = "${aws_api_gateway_deployment.deployment.invoke_url}/${var.path_part}"
 }

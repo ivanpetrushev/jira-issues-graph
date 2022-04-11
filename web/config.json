@@ -1,0 +1,22 @@
+{
+  "api_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "zx30vmlby9"
+  },
+  "jig_bucket": {
+    "sensitive": false,
+    "type": "string",
+    "value": "jig-web"
+  },
+  "lambda_list_issues_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://zx30vmlby9.execute-api.eu-central-1.amazonaws.com/live/list-issues"
+  },
+  "web_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://jig-web.s3.eu-central-1.amazonaws.com/index.html"
+  }
+}
