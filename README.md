@@ -4,6 +4,11 @@ jira-issues-graph is a web tool to generate a graph of Jira issues and their rel
 
 # Deploying
 
+Install Lambda dependencies:
+
+> cd terraform/lambdas/src/
+> yarn install
+
 Make sure you have the following env vars set:
 
 - AWS_ACCESS_KEY_ID
