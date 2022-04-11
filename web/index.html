@@ -29,7 +29,13 @@
       <tr>
         <td>Select label to show</td>
         <td>
-          <select id="labels"></select>
+          <select id="labels" onchange="change_label(this)"></select>
+        </td>
+      </tr>
+      <tr>
+        <td id="num_requests"></td>
+        <td>
+          <button id="generate_graph" onclick="generate_graph()" disabled>Generate graph</button>
         </td>
       </tr>
     </table>
