@@ -9,7 +9,7 @@ async function read_config() {
 
 async function request_listing() {
   const config = await read_config();
-  console.log(config);
+  document.getElementById('label_loading').classList.remove('hidden');
   const response = await fetch(config.lambda_list_issues_endpoint.value, {
     method: 'POST',
     headers: {
@@ -22,13 +22,14 @@ async function request_listing() {
   });
   const result = await response.json();
   console.log('result', result);
+  document.getElementById('label_loading').classList.add('hidden');
   if (result.data.labelsCount) {
     labelsCount = result.data.labelsCount;
     requestId = result.data.requestId;
     // clear old options
-    const numOptions = document.getElementById('labels').options.length;
+    const numOptions = document.getElementById('select_labels').options.length;
     for (let i = 0; i < numOptions; i++) {
-      document.getElementById('labels').remove(i);
+      document.getElementById('select_labels').remove(i);
     }
 
     // add new options
@@ -39,14 +40,17 @@ async function request_listing() {
       const option = document.createElement('option');
       option.value = label;
       option.text = `${label} - ${labelsCount[label]} issues`;
-      document.getElementById('labels').appendChild(option);
+      document.getElementById('select_labels').appendChild(option);
     }
   }
+  document.getElementById('label_labels').classList.remove('hidden');
+  document.getElementById('select_labels').classList.remove('hidden');
+  document.getElementById('btn_generate_graph').classList.remove('hidden');
 }
 
 async function generate_graph() {
   const config = await read_config();
-  document.getElementById('graph_url').innerHTML = 'Loading...';
+  document.getElementById('label_loading').classList.remove('hidden');
   const response = await fetch(config.lambda_generate_graph_endpoint.value, {
     method: 'POST',
     headers: {
@@ -55,20 +59,22 @@ async function generate_graph() {
     body: JSON.stringify({
       jira_base_url: document.getElementById('jira_base_url').value,
       access_cookies: document.getElementById('access_cookies').value,
-      label: document.getElementById('labels').value,
+      label: document.getElementById('select_labels').value,
       requestId: requestId,
     }),
   });
+  document.getElementById('label_loading').classList.add('hidden');
   const result = await response.json();
   console.log('result', result);
-  document.getElementById(
-    'graph_url'
-  ).innerHTML = `<a target="_blank" href="/graph.html?id=${requestId}">See Graph</a>`;
+  document.getElementById('btn_navigate_to_graph').classList.remove('hidden');
+}
+
+function navigate_to_graph() {
+  window.location.href = `/graph.html?id=${requestId}`;
 }
 
 function change_label(x) {
   document.getElementById('num_requests').innerHTML = `This will generate ${
     labelsCount[x.value] / 50
   } requests`;
-  document.getElementById('generate_graph').disabled = false;
 }

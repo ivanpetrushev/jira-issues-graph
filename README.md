@@ -6,8 +6,10 @@ jira-issues-graph is a web tool to generate a graph of Jira issues and their rel
 
 Install Lambda dependencies:
 
-> cd terraform/lambdas/src/
-> yarn install
+```
+$ cd terraform/lambdas/src/
+$ yarn install
+```
 
 Make sure you have the following env vars set:
 
@@ -19,8 +21,10 @@ You can `$ cp .env.defaults .env`, fill in your credentials, `$ source .env`
 
 Change bucket name in `terraform/vars.tf` - it must be something globally unique.
 
-> $ cd terraform
-> $ terraform init
+```
+$ cd terraform
+$ terraform init
+```
 
 Save output as web config:
 > $ terraform output -json > ../web/config.json

@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "web" {
-  bucket = "${var.hosting_bucket}"
+  bucket = var.hosting_bucket
 }
 
 resource "aws_s3_bucket_acl" "acl" {

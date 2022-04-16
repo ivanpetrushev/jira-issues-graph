@@ -1,6 +1,6 @@
 module "lambda_list_issues" {
   source                    = "./lambda-api-gw"
-  name                      = "list-issues"
+  name                      = "jig-list-issues"
   source_path               = "."
   lambda_handler            = "src/list-issues.handler"
   path_part                 = "list-issues"
@@ -22,7 +22,7 @@ output "lambda_list_issues_endpoint" {
 
 module "lambda_generate_graph" {
   source                    = "./lambda-api-gw"
-  name                      = "generate-graph"
+  name                      = "jig-generate-graph"
   source_path               = "."
   lambda_handler            = "src/generate-graph.handler"
   path_part                 = "generate-graph"
@@ -42,7 +42,7 @@ output "lambda_generate_graph_endpoint" {
 
 module "lambda_get_results" {
   source                    = "./lambda-api-gw"
-  name                      = "get-results"
+  name                      = "jig-get-results"
   source_path               = "."
   lambda_handler            = "src/get-results.handler"
   path_part                 = "get-results"

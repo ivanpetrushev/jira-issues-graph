@@ -16,5 +16,13 @@
   "trailingComma": "es5",
   "useTabs": false,
   "vueIndentScriptAndStyle": false,
-  "parser": "babel"
+  "parser": "babel",
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser":"html"
+      }
+    }
+  ]
 }

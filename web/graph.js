@@ -71,7 +71,12 @@ function draw() {
   const network = new vis.Network(container, data, options);
   network.on('click', function (params) {
     const url = jiraUrl + '/browse/' + params.nodes[0];
-    document.getElementById('info').innerHTML =
-      'JIRA URL: <a target="_blank" href="' + url + '">' + url + '</a>';
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.innerHTML = params.nodes[0];
+    a.classList = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded m-3';
+    document.getElementById('info').innerHTML = '';
+    document.getElementById('info').appendChild(a);
   });
 }

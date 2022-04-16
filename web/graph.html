@@ -1,16 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="w-full h-full">
   <meta charset="UTF-8" />
   <title>Jira Issues Graph</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="" />
+  <script src="https://cdn.tailwindcss.com"></script>
   <style type="text/css">
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
     #mynetwork {
       width: 100%;
       height: 90%;
@@ -18,16 +12,19 @@
     }
   </style>
   <script
-      type="text/javascript"
-      src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
-    ></script>
+    type="text/javascript"
+    src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
+  ></script>
   <script src="graph.js"></script>
-  <body onload="load_graph()">
-    <p>
+  <body
+    onload="load_graph()"
+    class="w-full h-full bg-gradient-to-b from-slate-50 to-slate-200"
+  >
+    <div>
       Mouse wheel to zoom. Bigger circles have more blocks. Click on issue for
       more details.
-    </p>
-    <p id="info"></p>
-    <div id="mynetwork"></div>
+    </div>
+    <div id="info" class="h-12 pt-3"></div>
+    <div id="mynetwork" class="pt-3"></div>
   </body>
 </html>

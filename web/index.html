@@ -1,47 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="w-full h-full">
   <meta charset="UTF-8" />
   <title>Jira Issues Graph</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="" />
-  <style></style>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="main.js"></script>
-  <body>
-    <table>
-      <tr>
-        <td>JIRA base URL (no trailing slash)</td>
-        <td>
-          <input type="text" name="jira_base_url" id="jira_base_url" placeholder="https://mydomain.atlassian.net" />
-        </td>
-      </tr>
-      <tr>
-        <td>Access cookies<br />TODO: instructions</td>
-        <td>
-          <textarea name="access_cookies" id="access_cookies" placeholder="JSESSIONID=..."></textarea>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td>
-          <button onclick="request_listing()">Submit</button>
-        </td>
-      </tr>
-      <tr>
-        <td>Select label to show</td>
-        <td>
-          <select id="labels" onchange="change_label(this)"></select>
-        </td>
-      </tr>
-      <tr>
-        <td id="num_requests"></td>
-        <td>
-          <button id="generate_graph" onclick="generate_graph()" disabled>Generate graph</button>
-        </td>
-      </tr>
-      <tr>
-        <td id="graph_url"></td>
-        <td></td>
-      </tr>
-    </table>
+
+  <body class="w-full h-full bg-gradient-to-b from-slate-50 to-slate-200">
+    <div
+      class="max-w-xl mx-auto border-2 border-sky-300 rounded-lg h-full px-2"
+    >
+      <div class="text-xl font-bold border-b-2 border-b-black py-2">
+        JIRA Issues Graph
+      </div>
+      <div class="pt-3">JIRA base URL (no trailing slash)</div>
+      <div>
+        <input
+          type="text"
+          class="w-full border-2 rounded-lg p-1"
+          name="jira_base_url"
+          id="jira_base_url"
+          placeholder="https://mydomain.atlassian.net"
+        />
+      </div>
+      <div class="pt-3">Access cookies (TODO: instructions)</div>
+      <div>
+        <textarea
+          class="w-full border-2 rounded-lg h-32 p-1"
+          name="access_cookies"
+          id="access_cookies"
+          placeholder="JSESSIONID=..."
+        ></textarea>
+      </div>
+      <div class="pt-3">
+        <button
+          onclick="request_listing()"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
+        >
+          Submit
+        </button>
+      </div>
+      <div class="hidden pt-3" id="label_labels">Select label to show</div>
+      <div>
+        <select
+          id="select_labels"
+          class="hidden w-full border-2 rounded-lg p-1"
+          onchange="change_label(this)"
+        ></select>
+      </div>
+      <div id="num_requests" class="pt-3"></div>
+      <div>
+        <button
+          id="btn_generate_graph"
+          onclick="generate_graph()"
+          class="hidden bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
+        >
+          Generate graph
+        </button>
+      </div>
+      <div class="hidden pt-3" id="label_loading">
+        Loading...
+      </div>
+      <div class="pt-3">
+        <button
+          id="btn_navigate_to_graph"
+          onclick="navigate_to_graph()"
+          class="hidden bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
+        >
+          See graph
+        </button>
+      </div>
+    </div>
   </body>
 </html>
