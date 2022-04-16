@@ -37,6 +37,7 @@ const handler = async (event) => {
           key: card.issue.key,
           sprint: sprintName,
           status: card.issue.status.name,
+          labels: card.issue.labels,
         });
         if (card.issue.labels) {
           for (const label of card.issue.labels) {
@@ -54,6 +55,7 @@ const handler = async (event) => {
         key: card.issue.key,
         sprint: "backlog",
         status: card.issue.status.name,
+        labels: card.issue.labels,
       });
       if (card.issue.labels) {
         for (const label of card.issue.labels) {
