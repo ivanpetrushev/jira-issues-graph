@@ -18,11 +18,17 @@
   <script src="graph.js"></script>
   <body
     onload="load_graph()"
-    class="w-full h-full bg-gradient-to-b from-slate-50 to-slate-200"
+    class="w-full h-full bg-gradient-to-b from-slate-50 to-slate-200 px-2 overflow-hidden"
   >
-    <div>
+    <div class="text-xl font-bold border-b-2 border-b-black py-2">
+      JIRA Issues Graph |
+      <a href="/index.html" class="text-sm text-blue-600/50 hover:text-blue-600"
+        >Home</a
+      >
+    </div>
+    <div class="pt-3">
       Mouse wheel to zoom. Bigger circles have more blocks. Click on issue for
-      more details.
+      JIRA link.
     </div>
     <div id="info" class="h-12 pt-3"></div>
     <div id="mynetwork" class="pt-3"></div>
