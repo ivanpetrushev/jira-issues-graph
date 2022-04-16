@@ -11,7 +11,13 @@
       class="max-w-xl mx-auto border-2 border-sky-300 rounded-lg h-full px-2"
     >
       <div class="text-xl font-bold border-b-2 border-b-black py-2">
-        JIRA Issues Graph
+        JIRA Issues Graph |
+        <a
+          href="https://github.com/ivanpetrushev/jira-issues-graph/"
+          target="_blank"
+          class="text-sm text-blue-600/50 hover:text-blue-600"
+          >GitHub</a
+        >
       </div>
       <div class="pt-3">JIRA base URL (no trailing slash)</div>
       <div>
@@ -58,9 +64,7 @@
           Generate graph
         </button>
       </div>
-      <div class="hidden pt-3" id="label_loading">
-        Loading...
-      </div>
+      <div class="hidden pt-3" id="label_loading">Loading...</div>
       <div class="pt-3">
         <button
           id="btn_navigate_to_graph"
