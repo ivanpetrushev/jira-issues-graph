@@ -10,14 +10,14 @@ module "lambda_list_issues" {
   rest_api_id               = aws_api_gateway_rest_api.api.id
   rest_api_execution_arn    = aws_api_gateway_rest_api.api.execution_arn
   authorizer                = "none"
-  memory_size = 256
+  memory_size               = 256
   # environment = {
   #   STAGE = "${terraform.workspace}"
   # }
 }
 
 output "lambda_list_issues_endpoint" {
-  value = "${module.lambda_list_issues.endpoint}"
+  value = module.lambda_list_issues.endpoint
 }
 
 module "lambda_generate_graph" {
@@ -32,12 +32,10 @@ module "lambda_generate_graph" {
   rest_api_id               = aws_api_gateway_rest_api.api.id
   rest_api_execution_arn    = aws_api_gateway_rest_api.api.execution_arn
   authorizer                = "none"
-  memory_size = 256
-  # environment = {
-  #   STAGE = "${terraform.workspace}"
-  # }
+  memory_size               = 256
+  timeout                   = 45
 }
 
 output "lambda_generate_graph_endpoint" {
-  value = "${module.lambda_generate_graph.endpoint}"
+  value = module.lambda_generate_graph.endpoint
 }

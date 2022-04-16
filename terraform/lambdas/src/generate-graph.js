@@ -1,34 +1,18 @@
 const AWS = require("aws-sdk");
-const uuid = require("uuid");
+const fs = require("fs");
 const axios = require("axios");
 const { getDetailsFragment } = require("./queries");
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
+// const s3 = new AWS.S3();
 
-const handler = async (event) => {
-  console.log("event", JSON.stringify(event, null, 2));
-  let success = false;
-  let data = {};
-  const body = JSON.parse(event.body);
-  const { label, requestId, jira_base_url, access_cookies } = body;
-  const url = jira_base_url + "/rest/graphql/1/";
-  const output = [];
+const detailsFilename = '/tmp/details.json';
+const parsedFilename = '/tmp/parsed.json';
 
-  // fetch stored data
-  const params = {
-    TableName: "jira-issues-graph",
-    Key: {
-      pk: `listing-${requestId}`,
-      sk: "listing",
-    },
-  };
-  const result = await dynamodb.get(params).promise();
 
-  const issues = result.Item.issues.filter((item) =>
-    item.labels.includes(label)
-  );
-
+const fetchDetails = async (issues, url, access_cookies) => {
   // generate queries and fetch data
+  const fetchedDetails = [];
   for (let i = 0; i < issues.length; i += 50) {
     const fragments = [];
     for (let j = 0; j < 50; j += 1) {
@@ -60,22 +44,195 @@ const handler = async (event) => {
     const result = await axios.post(url, body, { headers });
     // console.log(JSON.stringify(result.data, null, 2));
     for (const [resKey, item] of Object.entries(result.data)) {
-      output.push(item);
+      fetchedDetails.push(item);
     }
-    // fs.writeFileSync(detailsFilename, JSON.stringify(output, null, 2));
+    fs.writeFileSync(detailsFilename, JSON.stringify(fetchedDetails, null, 2));
   }
+};
 
-  // store result to dynamo
+const parseDetails = async () => {
+  console.log(`${new Date().toISOString()} - START parsing details`);
+  const details = JSON.parse(fs.readFileSync(detailsFilename));
+  const output = [];
+  for (const batch of details) {
+    for (const [resKey, result] of Object.entries(batch)) {
+      // console.log(result);
+      const issue = {
+        key: result.key,
+        blockedBy: [],
+        relatedInwards: [],
+        relatedOutwards: [],
+      };
+      for (const field of result.fields) {
+        if (field.key === 'summary') {
+          issue.summary = field.content;
+        }
+        if (field.title === 'Sprint') {
+          for (const item of field.content) {
+            if (item.state === 'active') {
+              issue.sprint = item.name;
+            }
+          }
+        }
+        if (field.key === 'labels') {
+          issue.labels = field.content;
+        }
+        if (field.key === 'issuelinks') {
+          for (const item of field.content) {
+            // console.log('trying', item);
+            if (
+              item.type.inward === 'is blocked by' &&
+              typeof item.inwardIssue !== 'undefined'
+            ) {
+              issue.blockedBy.push({
+                key: item.inwardIssue.key,
+                summary: item.inwardIssue.fields.summary,
+                status: item.inwardIssue.fields.status.name,
+              });
+            }
+            if (item.type.inward === 'relates to') {
+              if (typeof item.inwardIssue !== 'undefined') {
+                issue.relatedInwards.push({
+                  key: item.inwardIssue.key,
+                  summary: item.inwardIssue.fields.summary,
+                  status: item.inwardIssue.fields.status.name,
+                });
+              }
+              if (typeof item.outwardIssue !== 'undefined') {
+                issue.relatedOutwards.push({
+                  key: item.outwardIssue.key,
+                  summary: item.outwardIssue.fields.summary,
+                  status: item.outwardIssue.fields.status.name,
+                });
+              }
+            }
+          }
+        }
+        if (field.key === 'status') {
+          issue.status = field.content.name;
+        }
+      }
+      // console.log(issue);
+      output.push(issue);
+    }
+  }
+  fs.writeFileSync(parsedFilename, JSON.stringify(output, null, 2));
+};
+
+const writeVis = async (requestId) => {
+  console.log(`${new Date().toISOString()} - START writing vis JSON`);
+  let parsed = JSON.parse(fs.readFileSync(parsedFilename));
+  // filter only X labels
+  // parsed = parsed.filter((issue) => {
+  //   return issue.labels.includes('X');
+  // });
+
+  const nodes = [];
+  const edges = [];
+  // TODO: move status colors to general config
+  const groups = {
+    'To Do': {
+      color: 'gray',
+    },
+    'In Progress': {
+      color: 'blue',
+    },
+    'Code Review': {
+      color: 'blue',
+    },
+    'Done': {
+      color: 'green',
+    },
+  };
+  for (const issue of parsed) {
+    const summary = issue.summary.replace(/[^\w\d\s]/g, '');
+    let color = 'black';
+    if (issue.status === 'In Progress' || issue.status === 'Code Review') {
+      color = 'blue';
+    }
+    if (issue.status === 'Done') {
+      color = 'green';
+    }
+    nodes.push({
+      id: issue.key,
+      label: `${issue.key}`,
+      title: `${issue.key}\n${summary}\n${issue.status}`,
+      group: issue.status,
+      value: issue.blockedBy.length,
+    });
+    for (const blockedBy of issue.blockedBy) {
+      edges.push({
+        from: issue.key,
+        to: blockedBy.key,
+        arrows: 'from',
+        color: 'red'
+      });
+    }
+    for (const relatedInwards of issue.relatedInwards) {
+      edges.push({
+        from: issue.key,
+        to: relatedInwards.key,
+        arrows: 'from,to',
+        color: 'blue'
+      });
+    }
+  }
+  const output = `
+  const exported_nodes = ${JSON.stringify(nodes)};
+  const exported_edges = ${JSON.stringify(edges)};
+  const exported_groups = ${JSON.stringify(groups)};`
+
+  // const s3Params = {
+  //   Bucket: process.env.S3_BUCKET,
+  //   Key: `results/${requestId}.json`,
+  //   Body: JSON.stringify(output, null, 2),
+  //   ContentType: "application/json",
+  //   ACL: "public-read",
+  // };
+  // console.log('bucket', process.env.S3_BUCKET, 'key', s3Params.Key);
+  // const s3Result = await s3.putObject(s3Params).promise();
+
+  // store result to dynamo 
   const putParams = {
     TableName: "jira-issues-graph",
     Item: {
-      pk: `details-${requestId}`,
-      sk: "details",
-      issues: output,
+      pk: `result-${requestId}`,
+      sk: "result",
+      nodes,
+      edges,
+      groups,
     },
   };
   await dynamodb.put(putParams).promise();
+}
 
+const handler = async (event) => {
+  console.log("event", JSON.stringify(event, null, 2));
+  let success = false;
+  let data = {};
+  const body = JSON.parse(event.body);
+  const { label, requestId, jira_base_url, access_cookies } = body;
+  const url = jira_base_url + "/rest/graphql/1/";
+
+  // fetch stored data
+  const params = {
+    TableName: "jira-issues-graph",
+    Key: {
+      pk: `listing-${requestId}`,
+      sk: "listing",
+    },
+  };
+  const result = await dynamodb.get(params).promise();
+  console.log('result', JSON.stringify(result, null, 2));
+
+  const issues = result.Item.issues.filter((item) =>
+    item.labels.includes(label)
+  );
+
+  await fetchDetails(issues, url, access_cookies);
+  await parseDetails();
+  await writeVis(requestId);
+  
   return {
     statusCode: 200,
     body: JSON.stringify({ success, data }),

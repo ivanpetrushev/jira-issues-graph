@@ -79,7 +79,7 @@ const handler = async (event) => {
     const putParams = {
       TableName: "jira-issues-graph",
       Item: {
-        pk: `listing-${data.request_id}`,
+        pk: `listing-${data.requestId}`,
         sk: "listing",
         issues,
         labelsCount,
