@@ -1,5 +1,10 @@
 resource "aws_s3_bucket" "web" {
   bucket = var.hosting_bucket
+
+  website {
+    index_document = "index.html"
+    error_document = "error.html"
+  }
 }
 
 resource "aws_s3_bucket_acl" "acl" {
@@ -7,20 +12,8 @@ resource "aws_s3_bucket_acl" "acl" {
   acl    = "public-read"
 }
 
-resource "aws_s3_bucket_website_configuration" "website" {
-  bucket = aws_s3_bucket.web.bucket
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
-  }
-}
-
 output "web_url" {
-  value = "https://${aws_s3_bucket.web.bucket_regional_domain_name}/index.html"
+  value = "http://${aws_s3_bucket.web.website_endpoint}/index.html"
 }
 output "jig_bucket" {
   value = aws_s3_bucket.web.bucket
