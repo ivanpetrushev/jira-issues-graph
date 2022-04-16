@@ -83,6 +83,7 @@ const handler = async (event) => {
         sk: "listing",
         issues,
         labelsCount,
+        jiraUrl: body.jira_base_url,
         ttl: Math.floor(Date.now() / 1000) + 3600,
       },
     };

@@ -232,6 +232,7 @@ const handler = async (event) => {
   await fetchDetails(issues, url, access_cookies);
   await parseDetails();
   await writeVis(requestId);
+  success = false;
   
   return {
     statusCode: 200,
