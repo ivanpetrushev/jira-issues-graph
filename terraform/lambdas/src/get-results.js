@@ -19,21 +19,27 @@ const handler = async (event) => {
   };
   console.log('params', listingParams);
   const listingResult = await dynamodb.get(listingParams).promise();
-  data.jiraUrl = listingResult.Item.jiraUrl;
 
-  // fetch stored data
-  const resultParams = {
-    TableName: 'jira-issues-graph',
-    Key: {
-      pk: `result-${requestId}`,
-      sk: 'result',
-    },
-  };
-  console.log('params', resultParams);
-  const result = await dynamodb.get(resultParams).promise();
-  data.edges = result.Item.edges;
-  data.nodes = result.Item.nodes;
-  data.groups = result.Item.groups;
+  if (listingResult.Item) {
+    data.jiraUrl = listingResult.Item.jiraUrl;
+
+    // fetch stored data
+    const resultParams = {
+      TableName: 'jira-issues-graph',
+      Key: {
+        pk: `result-${requestId}`,
+        sk: 'result',
+      },
+    };
+    console.log('params', resultParams);
+    const result = await dynamodb.get(resultParams).promise();
+    data.edges = result.Item.edges;
+    data.nodes = result.Item.nodes;
+    data.groups = result.Item.groups;
+  } else {
+    success = false;
+    data.message = 'No data found';
+  }
 
   return {
     statusCode: 200,

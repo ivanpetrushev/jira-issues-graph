@@ -26,11 +26,15 @@ async function load_graph() {
   });
   const result = await response.json();
   console.log('result', result);
-  edges = result.data.edges;
-  nodes = result.data.nodes;
-  groups = result.data.groups;
-  jiraUrl = result.data.jiraUrl;
-  draw();
+  if (result.success) {
+    edges = result.data.edges;
+    nodes = result.data.nodes;
+    groups = result.data.groups;
+    jiraUrl = result.data.jiraUrl;
+    draw();
+  } else {
+    document.getElementById('info').innerHTML = 'Requested ID is not available. Try creating a new graph.';
+  }
 }
 
 function draw() {
@@ -75,7 +79,8 @@ function draw() {
     a.href = url;
     a.target = '_blank';
     a.innerHTML = params.nodes[0] + ' in JIRA';
-    a.classList = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded my-3';
+    a.classList =
+      'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded my-3';
     document.getElementById('info').innerHTML = '';
     document.getElementById('info').appendChild(a);
   });
