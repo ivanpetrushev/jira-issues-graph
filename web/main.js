@@ -46,6 +46,7 @@ async function request_listing() {
 
 async function generate_graph() {
   const config = await read_config();
+  document.getElementById('graph_url').innerHTML = 'Loading...';
   const response = await fetch(config.lambda_generate_graph_endpoint.value, {
     method: 'POST',
     headers: {
@@ -60,7 +61,7 @@ async function generate_graph() {
   });
   const result = await response.json();
   console.log('result', result);
-  document.getElementById('graph_url').value = result.data.graph_url;
+  document.getElementById('graph_url').innerHTML = `<a target="_blank" href="/graph.html?id=${requestId}">See Graph</a>`;
 }
 
 function change_label(x) {
