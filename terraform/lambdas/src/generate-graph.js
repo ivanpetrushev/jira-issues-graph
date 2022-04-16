@@ -4,7 +4,6 @@ const axios = require('axios');
 const { getDetailsFragment } = require('./queries');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
-// const s3 = new AWS.S3();
 
 const detailsFilename = '/tmp/details.json';
 const parsedFilename = '/tmp/parsed.json';
@@ -182,16 +181,6 @@ const writeVis = async (requestId) => {
   const exported_edges = ${JSON.stringify(edges)};
   const exported_groups = ${JSON.stringify(groups)};`;
 
-  // const s3Params = {
-  //   Bucket: process.env.S3_BUCKET,
-  //   Key: `results/${requestId}.json`,
-  //   Body: JSON.stringify(output, null, 2),
-  //   ContentType: "application/json",
-  //   ACL: "public-read",
-  // };
-  // console.log('bucket', process.env.S3_BUCKET, 'key', s3Params.Key);
-  // const s3Result = await s3.putObject(s3Params).promise();
-
   // store result to dynamo
   const putParams = {
     TableName: 'jira-issues-graph',
@@ -201,6 +190,7 @@ const writeVis = async (requestId) => {
       nodes,
       edges,
       groups,
+      ttl: Math.floor(Date.now() / 1000) + 3600,
     },
   };
   await dynamodb.put(putParams).promise();

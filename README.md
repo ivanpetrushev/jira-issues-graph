@@ -34,3 +34,6 @@ After everything is deployed, you can upload web contents:
 
 Web UI is available on:
 > $ terraform output web_url
+
+# TODO
+- CloudFront / SSL integration for posting over HTTPS

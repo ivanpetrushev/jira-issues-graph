@@ -46,6 +46,7 @@ async function request_listing() {
   document.getElementById('label_labels').classList.remove('hidden');
   document.getElementById('select_labels').classList.remove('hidden');
   document.getElementById('btn_generate_graph').classList.remove('hidden');
+  document.getElementById('label_more_time').classList.remove('hidden');
 }
 
 async function generate_graph() {
@@ -73,8 +74,3 @@ function navigate_to_graph() {
   window.location.href = `/graph.html?id=${requestId}`;
 }
 
-function change_label(x) {
-  document.getElementById('num_requests').innerHTML = `This will generate ${
-    labelsCount[x.value] / 50
-  } requests`;
-}
