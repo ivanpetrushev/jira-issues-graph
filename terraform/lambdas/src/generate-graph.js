@@ -1,7 +1,7 @@
-const AWS = require("aws-sdk");
-const fs = require("fs");
-const axios = require("axios");
-const { getDetailsFragment } = require("./queries");
+const AWS = require('aws-sdk');
+const fs = require('fs');
+const axios = require('axios');
+const { getDetailsFragment } = require('./queries');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 // const s3 = new AWS.S3();
@@ -9,37 +9,37 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 const detailsFilename = '/tmp/details.json';
 const parsedFilename = '/tmp/parsed.json';
 
-
 const fetchDetails = async (issues, url, access_cookies) => {
   // generate queries and fetch data
   const fetchedDetails = [];
   for (let i = 0; i < issues.length; i += 50) {
     const fragments = [];
     for (let j = 0; j < 50; j += 1) {
-      if (typeof issues[i + j] === "undefined") {
+      if (typeof issues[i + j] === 'undefined') {
         break;
       }
       const text = getDetailsFragment
-        .replace("#KEY#", issues[i + j].key)
-        .replace("#NUMBER#", i + j);
+        .replace('#KEY#', issues[i + j].key)
+        .replace('#NUMBER#', i + j);
       // console.log(text, issues[i + j].key, i + j);
       fragments.push(text);
     }
-    const detailsQuery = `query abc { ${fragments.join("\n")} }`;
+    const detailsQuery = `query abc { ${fragments.join('\n')} }`;
     // console.log(detailsQuery);
 
     // fire away
     const headers = {
-      accept: "application/json,text/javascript",
-      "content-type": "application/json",
+      accept: 'application/json,text/javascript',
+      'content-type': 'application/json',
       cookie: access_cookies,
     };
     let body = JSON.stringify({ query: detailsQuery, variables: {} });
     // console.log(body);
 
     console.log(
-      `${new Date().toISOString()} - fetching details batch ${i /
-        50} of ${issues.length / 50}`
+      `${new Date().toISOString()} - fetching details batch ${i / 50} of ${
+        issues.length / 50
+      }`
     );
     const result = await axios.post(url, body, { headers });
     // console.log(JSON.stringify(result.data, null, 2));
@@ -140,7 +140,7 @@ const writeVis = async (requestId) => {
     'Code Review': {
       color: 'blue',
     },
-    'Done': {
+    Done: {
       color: 'green',
     },
   };
@@ -165,7 +165,7 @@ const writeVis = async (requestId) => {
         from: issue.key,
         to: blockedBy.key,
         arrows: 'from',
-        color: 'red'
+        color: 'red',
       });
     }
     for (const relatedInwards of issue.relatedInwards) {
@@ -173,14 +173,14 @@ const writeVis = async (requestId) => {
         from: issue.key,
         to: relatedInwards.key,
         arrows: 'from,to',
-        color: 'blue'
+        color: 'blue',
       });
     }
   }
   const output = `
   const exported_nodes = ${JSON.stringify(nodes)};
   const exported_edges = ${JSON.stringify(edges)};
-  const exported_groups = ${JSON.stringify(groups)};`
+  const exported_groups = ${JSON.stringify(groups)};`;
 
   // const s3Params = {
   //   Bucket: process.env.S3_BUCKET,
@@ -192,34 +192,34 @@ const writeVis = async (requestId) => {
   // console.log('bucket', process.env.S3_BUCKET, 'key', s3Params.Key);
   // const s3Result = await s3.putObject(s3Params).promise();
 
-  // store result to dynamo 
+  // store result to dynamo
   const putParams = {
-    TableName: "jira-issues-graph",
+    TableName: 'jira-issues-graph',
     Item: {
       pk: `result-${requestId}`,
-      sk: "result",
+      sk: 'result',
       nodes,
       edges,
       groups,
     },
   };
   await dynamodb.put(putParams).promise();
-}
+};
 
 const handler = async (event) => {
-  console.log("event", JSON.stringify(event, null, 2));
+  console.log('event', JSON.stringify(event, null, 2));
   let success = false;
   let data = {};
   const body = JSON.parse(event.body);
   const { label, requestId, jira_base_url, access_cookies } = body;
-  const url = jira_base_url + "/rest/graphql/1/";
+  const url = jira_base_url + '/rest/graphql/1/';
 
   // fetch stored data
   const params = {
-    TableName: "jira-issues-graph",
+    TableName: 'jira-issues-graph',
     Key: {
       pk: `listing-${requestId}`,
-      sk: "listing",
+      sk: 'listing',
     },
   };
   const result = await dynamodb.get(params).promise();
@@ -233,14 +233,14 @@ const handler = async (event) => {
   await parseDetails();
   await writeVis(requestId);
   success = false;
-  
+
   return {
     statusCode: 200,
     body: JSON.stringify({ success, data }),
     headers: {
-      "Content-type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
+      'Content-type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
     },
   };
 };

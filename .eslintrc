@@ -1,0 +1,31 @@
+{
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "google",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "experimentalObjectRestSpread": true,
+    "ecmaVersion": 2020,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module",
+    "requireConfigFile": false
+  },
+  "rules": {
+    "require-jsdoc": 0,
+    "react/prop-types": 0
+  },
+  "settings":{
+    "react": {
+      "version": "detect"
+    }
+  }
+}

@@ -16,9 +16,9 @@ async function request_listing() {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      'jira_base_url': document.getElementById('jira_base_url').value,
-      'access_cookies': document.getElementById('access_cookies').value,
-    })
+      jira_base_url: document.getElementById('jira_base_url').value,
+      access_cookies: document.getElementById('access_cookies').value,
+    }),
   });
   const result = await response.json();
   console.log('result', result);
@@ -53,18 +53,22 @@ async function generate_graph() {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      jira_base_url: document.getElementById("jira_base_url").value,
-      access_cookies: document.getElementById("access_cookies").value,
-      label: document.getElementById("labels").value,
+      jira_base_url: document.getElementById('jira_base_url').value,
+      access_cookies: document.getElementById('access_cookies').value,
+      label: document.getElementById('labels').value,
       requestId: requestId,
-    })
+    }),
   });
   const result = await response.json();
   console.log('result', result);
-  document.getElementById('graph_url').innerHTML = `<a target="_blank" href="/graph.html?id=${requestId}">See Graph</a>`;
+  document.getElementById(
+    'graph_url'
+  ).innerHTML = `<a target="_blank" href="/graph.html?id=${requestId}">See Graph</a>`;
 }
 
 function change_label(x) {
-  document.getElementById('num_requests').innerHTML = `This will generate ${labelsCount[x.value]/50} requests`;
+  document.getElementById('num_requests').innerHTML = `This will generate ${
+    labelsCount[x.value] / 50
+  } requests`;
   document.getElementById('generate_graph').disabled = false;
 }

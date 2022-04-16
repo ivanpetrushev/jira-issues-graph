@@ -22,7 +22,7 @@ async function load_graph() {
     },
     body: JSON.stringify({
       requestId: id,
-    })
+    }),
   });
   const result = await response.json();
   console.log('result', result);
@@ -69,7 +69,7 @@ function draw() {
     },
   };
   const network = new vis.Network(container, data, options);
-  network.on('click', function(params) {
+  network.on('click', function (params) {
     const url = jiraUrl + '/browse/' + params.nodes[0];
     document.getElementById('info').innerHTML =
       'JIRA URL: <a target="_blank" href="' + url + '">' + url + '</a>';

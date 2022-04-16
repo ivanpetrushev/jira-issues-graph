@@ -1,20 +1,20 @@
-const AWS = require("aws-sdk");
+const AWS = require('aws-sdk');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 const handler = async (event) => {
-  console.log("event", JSON.stringify(event, null, 2));
+  console.log('event', JSON.stringify(event, null, 2));
   let success = true;
   let data = {};
   const body = JSON.parse(event.body);
-  const { requestId} = body;
+  const { requestId } = body;
 
   // fetch stored data
   const listingParams = {
-    TableName: "jira-issues-graph",
+    TableName: 'jira-issues-graph',
     Key: {
       pk: `listing-${requestId}`,
-      sk: "listing",
+      sk: 'listing',
     },
   };
   console.log('params', listingParams);
@@ -23,10 +23,10 @@ const handler = async (event) => {
 
   // fetch stored data
   const resultParams = {
-    TableName: "jira-issues-graph",
+    TableName: 'jira-issues-graph',
     Key: {
       pk: `result-${requestId}`,
-      sk: "result",
+      sk: 'result',
     },
   };
   console.log('params', resultParams);
@@ -39,9 +39,9 @@ const handler = async (event) => {
     statusCode: 200,
     body: JSON.stringify({ success, data }),
     headers: {
-      "Content-type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
+      'Content-type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
     },
   };
 };

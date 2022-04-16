@@ -1,12 +1,12 @@
-const AWS = require("aws-sdk");
-const uuid = require("uuid");
-const axios = require("axios");
-const { listAll } = require("./queries");
+const AWS = require('aws-sdk');
+const uuid = require('uuid');
+const axios = require('axios');
+const { listAll } = require('./queries');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 const handler = async (event) => {
-  console.log("event", JSON.stringify(event, null, 2));
+  console.log('event', JSON.stringify(event, null, 2));
   let success = false;
   let data = {
     requestId: uuid.v4(),
@@ -14,10 +14,10 @@ const handler = async (event) => {
   const body = JSON.parse(event.body);
 
   console.log(`${new Date().toISOString()} - START fetching listing`);
-  const url = body.jira_base_url + "/jsw/graphql?operation=BacklogDataQuery";
+  const url = body.jira_base_url + '/jsw/graphql?operation=BacklogDataQuery';
   const headers = {
-    accept: "application/json,text/javascript",
-    "content-type": "application/json",
+    accept: 'application/json,text/javascript',
+    'content-type': 'application/json',
     cookie: body.access_cookies,
   };
 
@@ -26,12 +26,12 @@ const handler = async (event) => {
 
   try {
     const result = await axios.post(url, listAll, { headers });
-    console.log("result", JSON.stringify(result.data, null, 2));
+    console.log('result', JSON.stringify(result.data, null, 2));
     const listing = result.data;
 
     for (const sprint of listing.data.boardScope.sprints) {
       const sprintName = sprint.name;
-      console.log("sprintName", sprintName);
+      console.log('sprintName', sprintName);
       for (const card of sprint.cards) {
         issues.push({
           key: card.issue.key,
@@ -53,7 +53,7 @@ const handler = async (event) => {
     for (const card of listing.data.boardScope.backlog.cards) {
       issues.push({
         key: card.issue.key,
-        sprint: "backlog",
+        sprint: 'backlog',
         status: card.issue.status.name,
         labels: card.issue.labels,
       });
@@ -68,7 +68,7 @@ const handler = async (event) => {
     }
     success = true;
   } catch (error) {
-    console.log("error", error);
+    console.log('error', error);
   }
 
   data.issues = issues;
@@ -77,10 +77,10 @@ const handler = async (event) => {
   if (success) {
     console.log(`${new Date().toISOString()} - SUCCESS fetching listing`);
     const putParams = {
-      TableName: "jira-issues-graph",
+      TableName: 'jira-issues-graph',
       Item: {
         pk: `listing-${data.requestId}`,
-        sk: "listing",
+        sk: 'listing',
         issues,
         labelsCount,
         jiraUrl: body.jira_base_url,
@@ -94,9 +94,9 @@ const handler = async (event) => {
     statusCode: 200,
     body: JSON.stringify({ success, data }),
     headers: {
-      "Content-type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
+      'Content-type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
     },
   };
 };
