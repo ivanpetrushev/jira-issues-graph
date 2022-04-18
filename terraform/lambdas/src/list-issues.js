@@ -84,7 +84,7 @@ const handler = async (event) => {
         issues,
         labelsCount,
         jiraUrl: body.jira_base_url,
-        ttl: Math.floor(Date.now() / 1000) + 3600,
+        ttl: Math.floor(Date.now() / 1000) + 3600 * 24,
       },
     };
     await dynamodb.put(putParams).promise();
