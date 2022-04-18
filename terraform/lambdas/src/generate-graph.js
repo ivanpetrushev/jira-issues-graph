@@ -115,6 +115,42 @@ const parseDetails = async () => {
       output.push(issue);
     }
   }
+
+  // go through all issues, find non-existing blocking/inward/outward issues and add them as nodes
+  const issueKeyMap = {};
+  for (const issue of output) {
+    issueKeyMap[issue.key] = issue;
+  }
+  for (const issue of output) {
+    if (typeof issue.blockedBy === 'undefined') {
+      issue.blockedBy = [];
+    }
+    for (const item of issue.blockedBy) {
+      if (typeof issueKeyMap[item.key] === 'undefined') {
+        issueKeyMap[item.key] = item;
+        output.push(item);
+      }
+    }
+    if (typeof issue.relatedInwards === 'undefined') {
+      issue.relatedInwards = [];
+    }
+    for (const item of issue.relatedInwards) {
+      if (typeof issueKeyMap[item.key] === 'undefined') {
+        issueKeyMap[item.key] = item;
+        output.push(item);
+      }
+    }
+    if (typeof issue.relatedOutwards === 'undefined') {
+      issue.relatedOutwards = [];
+    }
+    for (const item of issue.relatedOutwards) {
+      if (typeof issueKeyMap[item.key] === 'undefined') {
+        issueKeyMap[item.key] = item;
+        output.push(item);
+      }
+    }
+  }
+
   fs.writeFileSync(parsedFilename, JSON.stringify(output, null, 2));
 };
 
