@@ -33,7 +33,8 @@ async function load_graph() {
     jiraUrl = result.data.jiraUrl;
     draw();
   } else {
-    document.getElementById('info').innerHTML = 'Requested ID is not available. Try creating a new graph.';
+    document.getElementById('info').innerHTML =
+      'Requested ID is not available. Try creating a new graph.';
   }
 }
 
@@ -74,14 +75,27 @@ function draw() {
   };
   const network = new vis.Network(container, data, options);
   network.on('click', function (params) {
-    const url = jiraUrl + '/browse/' + params.nodes[0];
+    if (params.nodes.length === 0) {
+      // not clicked on a node
+      return;
+    }
+    const issue = nodes.find((node) => node.id === params.nodes[0]);
+
+    const url = jiraUrl + '/browse/' + issue.id;
     const a = document.createElement('a');
     a.href = url;
     a.target = '_blank';
-    a.innerHTML = params.nodes[0] + ' in JIRA';
+    a.innerHTML = issue.id + ' in JIRA';
     a.classList =
       'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded my-3';
-    document.getElementById('info').innerHTML = '';
-    document.getElementById('info').appendChild(a);
+    document.getElementById('btn_jira').innerHTML = '';
+    document.getElementById('btn_jira').appendChild(a);
+
+    document.getElementById('label_status').innerHTML = issue.group;
+    document.getElementById('label_status').classList =
+      'font-bold py-2 px-4 border border-blue-700 rounded my-3';
+    document.getElementById(
+      'label_summary'
+    ).innerHTML = `${issue.id} ${issue.summary}`;
   });
 }

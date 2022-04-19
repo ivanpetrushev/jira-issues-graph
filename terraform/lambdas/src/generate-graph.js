@@ -192,6 +192,7 @@ const writeVis = async (requestId) => {
       id: issue.key,
       label: `${issue.key}`,
       title: `${issue.key}\n${summary}\n${issue.status}`,
+      summary: summary,
       group: issue.status,
       value: issue.blockedBy.length,
     });
