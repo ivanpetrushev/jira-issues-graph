@@ -21,6 +21,7 @@ const handler = async (event) => {
     cookie: body.access_cookies,
   };
 
+  let totalCount = 0;
   const labelsCount = {};
   const issues = [];
 
@@ -32,6 +33,7 @@ const handler = async (event) => {
     for (const sprint of listing.data.boardScope.sprints) {
       const sprintName = sprint.name;
       console.log('sprintName', sprintName);
+      totalCount += sprint.cards.length;
       for (const card of sprint.cards) {
         issues.push({
           key: card.issue.key,
@@ -50,6 +52,7 @@ const handler = async (event) => {
       }
     }
     // add backlog items
+    totalCount += listing.data.boardScope.backlog.cards.length;
     for (const card of listing.data.boardScope.backlog.cards) {
       issues.push({
         key: card.issue.key,
@@ -73,6 +76,7 @@ const handler = async (event) => {
 
   data.issues = issues;
   data.labelsCount = labelsCount;
+  data.totalCount = totalCount;
 
   if (success) {
     console.log(`${new Date().toISOString()} - SUCCESS fetching listing`);

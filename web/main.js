@@ -32,7 +32,13 @@ async function request_listing() {
       document.getElementById('select_labels').remove(i);
     }
 
-    // add new options
+    // add option element for "All labels" - this will most likely timeout, let's not have it as a default option
+    // const option = document.createElement('option');
+    // option.value = '';
+    // option.text = `All labels - ${result.data.totalCount} issues`;
+    // document.getElementById('select_labels').appendChild(option);
+
+    // add option element for each label
     const labels = Object.keys(labelsCount);
     labels.sort((a, b) => labelsCount[b] - labelsCount[a]);
     // TODO: investigate random order of options elements generated below
@@ -73,4 +79,3 @@ async function generate_graph() {
 function navigate_to_graph() {
   window.location.href = `/graph.html?id=${requestId}`;
 }
-

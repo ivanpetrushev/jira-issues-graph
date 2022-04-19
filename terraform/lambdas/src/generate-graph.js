@@ -251,9 +251,10 @@ const handler = async (event) => {
   const result = await dynamodb.get(params).promise();
   console.log('result', JSON.stringify(result, null, 2));
 
-  const issues = result.Item.issues.filter((item) =>
-    item.labels.includes(label)
-  );
+  let issues = result.Item.issues;
+  if (label.length > 0) {
+    issues = issues.filter((item) => item.labels.includes(label));
+  }
 
   await fetchDetails(issues, url, access_cookies);
   await parseDetails();
